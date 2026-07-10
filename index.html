@@ -367,16 +367,18 @@
       ];
 
       function updateClock() {
-        document.getElementById("clock").textContent = new Date().toLocaleString("en-US", {
+        document.getElementById("clock").textContent = new Date().toLocaleString("en-GB", {
           dateStyle: "medium",
-          timeStyle: "medium"
+          timeStyle: "medium",
+          hour12: false
         });
       }
 
       function setLastRefresh() {
-        const stamp = new Date().toLocaleString("en-US", {
+        const stamp = new Date().toLocaleString("en-GB", {
           dateStyle: "medium",
-          timeStyle: "medium"
+          timeStyle: "medium",
+          hour12: false
         });
         document.getElementById("lastRefresh").textContent = stamp;
       }
