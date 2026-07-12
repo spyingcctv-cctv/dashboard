@@ -247,7 +247,7 @@
             </div>
           </section>
 
-          <section class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
             <article class="glass rounded-[28px] p-6 sm:p-8">
               <h2 class="text-xl font-semibold text-white">Priority Distribution</h2>
               <p class="mt-1 text-sm text-slate-400">Volume by severity level.</p>
@@ -260,6 +260,13 @@
               <p class="mt-1 text-sm text-slate-400">Client mix and segment concentration.</p>
               <div class="mt-5 h-[280px]">
                 <canvas id="clientChart"></canvas>
+              </div>
+            </article>
+            <article class="glass rounded-[28px] p-6 sm:p-8">
+              <h2 class="text-xl font-semibold text-white">Status Distribution</h2>
+              <p class="mt-1 text-sm text-slate-400">Workflow status breakdown across the queue.</p>
+              <div class="mt-5 h-[280px]">
+                <canvas id="statusChart"></canvas>
               </div>
             </article>
           </section>
@@ -306,6 +313,7 @@
                     <option value="date-asc">Oldest First</option>
                     <option value="priority">Priority</option>
                     <option value="project">Project</option>
+                    <option value="status">Status</option>
                   </select>
                 </label>
               </div>
@@ -321,6 +329,7 @@
                       <th class="px-4 py-3 text-left">Issue Type</th>
                       <th class="px-4 py-3 text-left">Priority</th>
                       <th class="px-4 py-3 text-left">Client Category</th>
+                      <th class="px-4 py-3 text-left">Status</th>
                     </tr>
                   </thead>
                   <tbody id="ticketsTableBody" class="divide-y divide-slate-800 bg-slate-950/60"></tbody>
@@ -352,21 +361,21 @@
       const charts = {};
 
       const defaultData = [
-        { "Start Date": "2026-07-01", Projects: "Atlas Core", "Issue Type": "Voice", Priority: "High", "Client Category": "Enterprise", "Issue Key": "INC-1042" },
-        { "Start Date": "2026-06-28", Projects: "Northstar", "Issue Type": "Call", Priority: "Medium", "Client Category": "Mid-Market", "Issue Key": "INC-1019" },
-        { "Start Date": "2026-06-24", Projects: "Atlas Core", "Issue Type": "Recording", Priority: "High", "Client Category": "Enterprise", "Issue Key": "INC-1008" },
-        { "Start Date": "2026-06-20", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "Low", "Client Category": "SMB", "Issue Key": "INC-0997" },
-        { "Start Date": "2026-06-18", Projects: "Northstar", "Issue Type": "Call", Priority: "High", "Client Category": "Mid-Market", "Issue Key": "INC-0982" },
-        { "Start Date": "2026-06-12", Projects: "Orbit Ops", "Issue Type": "Recording", Priority: "Medium", "Client Category": "Enterprise", "Issue Key": "INC-0964" },
-        { "Start Date": "2026-05-30", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "High", "Client Category": "SMB", "Issue Key": "INC-0931" },
-        { "Start Date": "2026-05-25", Projects: "Atlas Core", "Issue Type": "Call", Priority: "Medium", "Client Category": "Enterprise", "Issue Key": "INC-0924" },
-        { "Start Date": "2026-05-22", Projects: "Orbit Ops", "Issue Type": "Voice", Priority: "High", "Client Category": "Enterprise", "Issue Key": "INC-0918" },
-        { "Start Date": "2026-05-10", Projects: "Northstar", "Issue Type": "Recording", Priority: "Low", "Client Category": "Mid-Market", "Issue Key": "INC-0897" },
-        { "Start Date": "2026-04-19", Projects: "Atlas Core", "Issue Type": "Call", Priority: "Medium", "Client Category": "Enterprise", "Issue Key": "INC-0854" },
-        { "Start Date": "2026-04-14", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "High", "Client Category": "SMB", "Issue Key": "INC-0845" },
-        { "Start Date": "2026-03-09", Projects: "Northstar", "Issue Type": "Voice", Priority: "High", "Client Category": "Mid-Market", "Issue Key": "INC-0802" },
-        { "Start Date": "2026-03-03", Projects: "Orbit Ops", "Issue Type": "Recording", Priority: "Medium", "Client Category": "Enterprise", "Issue Key": "INC-0789" },
-        { "Start Date": "2026-02-21", Projects: "Pulse AI", "Issue Type": "Call", Priority: "Low", "Client Category": "SMB", "Issue Key": "INC-0751" }
+        { "Start Date": "2026-07-01", Projects: "Atlas Core", "Issue Type": "Voice", Priority: "High", "Client Category": "Enterprise", Status: "Solved", "Issue Key": "INC-1042" },
+        { "Start Date": "2026-06-28", Projects: "Northstar", "Issue Type": "Call", Priority: "Medium", "Client Category": "Mid-Market", Status: "On Progress", "Issue Key": "INC-1019" },
+        { "Start Date": "2026-06-24", Projects: "Atlas Core", "Issue Type": "Recording", Priority: "High", "Client Category": "Enterprise", Status: "Pending", "Issue Key": "INC-1008" },
+        { "Start Date": "2026-06-20", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "Low", "Client Category": "SMB", Status: "On Progress", "Issue Key": "INC-0997" },
+        { "Start Date": "2026-06-18", Projects: "Northstar", "Issue Type": "Call", Priority: "High", "Client Category": "Mid-Market", Status: "Solved", "Issue Key": "INC-0982" },
+        { "Start Date": "2026-06-12", Projects: "Orbit Ops", "Issue Type": "Recording", Priority: "Medium", "Client Category": "Enterprise", Status: "Pending", "Issue Key": "INC-0964" },
+        { "Start Date": "2026-05-30", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "High", "Client Category": "SMB", Status: "On Progress", "Issue Key": "INC-0931" },
+        { "Start Date": "2026-05-25", Projects: "Atlas Core", "Issue Type": "Call", Priority: "Medium", "Client Category": "Enterprise", Status: "Solved", "Issue Key": "INC-0924" },
+        { "Start Date": "2026-05-22", Projects: "Orbit Ops", "Issue Type": "Voice", Priority: "High", "Client Category": "Enterprise", Status: "Pending", "Issue Key": "INC-0918" },
+        { "Start Date": "2026-05-10", Projects: "Northstar", "Issue Type": "Recording", Priority: "Low", "Client Category": "Mid-Market", Status: "On Progress", "Issue Key": "INC-0897" },
+        { "Start Date": "2026-04-19", Projects: "Atlas Core", "Issue Type": "Call", Priority: "Medium", "Client Category": "Enterprise", Status: "Solved", "Issue Key": "INC-0854" },
+        { "Start Date": "2026-04-14", Projects: "Pulse AI", "Issue Type": "Voice", Priority: "High", "Client Category": "SMB", Status: "Pending", "Issue Key": "INC-0845" },
+        { "Start Date": "2026-03-09", Projects: "Northstar", "Issue Type": "Voice", Priority: "High", "Client Category": "Mid-Market", Status: "Solved", "Issue Key": "INC-0802" },
+        { "Start Date": "2026-03-03", Projects: "Orbit Ops", "Issue Type": "Recording", Priority: "Medium", "Client Category": "Enterprise", Status: "On Progress", "Issue Key": "INC-0789" },
+        { "Start Date": "2026-02-21", Projects: "Pulse AI", "Issue Type": "Call", Priority: "Low", "Client Category": "SMB", Status: "Pending", "Issue Key": "INC-0751" }
       ];
 
       function updateClock() {
@@ -444,6 +453,10 @@
         return String(getValue(row, ["Client Category", "Client Tier", "Client", "Tier"]) || "Unknown");
       }
 
+      function getStatus(row) {
+        return String(getValue(row, ["Status", "status", "Ticket Status", "Issue Status", "Workflow Status"]) || "Unknown");
+      }
+
       function getIssueKey(row) {
         return String(getValue(row, ["Issue Key", "IssueKey", "issue key", "issue_key", "Ticket ID", "ID", "Ticket"]) || "#000");
       }
@@ -455,6 +468,7 @@
           issueType: getIssueType(row),
           priority: getPriority(row),
           clientCategory: getClientCategory(row),
+          status: getStatus(row),
           issueKey: getIssueKey(row),
           raw: row
         }));
@@ -474,6 +488,14 @@
         if (value.includes("high")) return "bg-rose-500/15 text-rose-300";
         if (value.includes("medium")) return "bg-amber-500/15 text-amber-300";
         return "bg-emerald-500/15 text-emerald-300";
+      }
+
+      function getStatusClasses(status) {
+        const value = String(status).toLowerCase();
+        if (value.includes("solved") || value.includes("done") || value.includes("closed")) return "bg-emerald-500/15 text-emerald-300";
+        if (value.includes("on progress") || value.includes("in progress") || value.includes("progress")) return "bg-amber-500/15 text-amber-300";
+        if (value.includes("pending") || value.includes("waiting") || value.includes("open")) return "bg-slate-700/15 text-slate-200";
+        return "bg-slate-800/15 text-slate-300";
       }
 
       function destroyCharts() {
@@ -612,6 +634,29 @@
         });
       }
 
+      function renderStatusChart() {
+        const counts = countBy(state.data, (row) => row.status);
+        const labels = Object.keys(counts);
+        const values = Object.values(counts);
+        charts.status = new Chart(document.getElementById("statusChart"), {
+          type: "doughnut",
+          data: {
+            labels,
+            datasets: [{
+              data: values,
+              backgroundColor: ["#34d399", "#fbbf24", "#818cf8", "#94a3b8"],
+              borderColor: "rgba(2, 6, 23, 0.95)",
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: "#cbd5e1" } } }
+          }
+        });
+      }
+
       function renderTopProjects() {
         const counts = countBy(state.data, (row) => row.project);
         const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -707,17 +752,20 @@
       function applyFilters() {
         const search = state.search.toLowerCase();
         let rows = state.data.filter((row) => {
-          return [row.issueKey, row.project, row.issueType, row.priority, row.clientCategory, row.date].join(" ").toLowerCase().includes(search);
+          return [row.issueKey, row.project, row.issueType, row.priority, row.clientCategory, row.status, row.date].join(" ").toLowerCase().includes(search);
         });
 
         rows.sort((a, b) => {
           const dir = state.sort.endsWith("asc") ? 1 : -1;
           if (state.sort.includes("priority")) {
             const priorityRank = { High: 3, Medium: 2, Low: 1 };
-            return (priorityRank[b.priority] || 0 - (priorityRank[a.priority] || 0)) * dir;
+            return ((priorityRank[b.priority] || 0) - (priorityRank[a.priority] || 0)) * dir;
           }
           if (state.sort.includes("project")) {
             return a.project.localeCompare(b.project) * dir;
+          }
+          if (state.sort.includes("status")) {
+            return a.status.localeCompare(b.status) * dir;
           }
           const aDate = new Date(a.date).getTime();
           const bDate = new Date(b.date).getTime();
@@ -737,7 +785,7 @@
         if (!pageRows.length) {
           tbody.innerHTML = `
             <tr>
-              <td colspan="5" class="px-4 py-8 text-center text-slate-400">No tickets matched your filters.</td>
+              <td colspan="6" class="px-4 py-8 text-center text-slate-400">No tickets matched your filters.</td>
             </tr>
           `;
           document.getElementById("tableMeta").textContent = "0 tickets available";
@@ -752,6 +800,7 @@
             <td class="px-4 py-3 text-slate-200">${row.issueType}</td>
             <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-medium ${getPriorityClasses(row.priority)}">${row.priority}</span></td>
             <td class="px-4 py-3 text-slate-300">${row.clientCategory}</td>
+            <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-medium ${getStatusClasses(row.status)}">${row.status}</span></td>
           </tr>
         `).join("");
 
@@ -795,6 +844,7 @@
         renderTrendChart();
         renderPriorityChart();
         renderClientChart();
+        renderStatusChart();
         renderTopProjects();
         renderIssueSummary();
         applyFilters();
