@@ -139,32 +139,29 @@
                 A premium, real-time command surface for ticket operations, priority triage, and client health.
               </p>
             </div>
-            <div class="flex flex-col gap-3 md:flex-row">
-              <div class="glass rounded-2xl px-4 py-3 min-w-[220px]">
+            <div class="flex flex-col gap-2 md:flex-row md:items-center">
+              <div class="glass rounded-2xl px-3 py-2 min-w-[170px]">
                 <div class="text-[10px] uppercase tracking-[0.3em] text-slate-400">Live Clock</div>
-                <div id="clock" class="mt-2 font-mono text-lg text-white"></div>
+                <div id="clock" class="mt-2 font-mono text-sm text-white"></div>
               </div>
-              <div class="glass rounded-2xl px-4 py-3 min-w-[240px]">
+              <div class="glass rounded-2xl px-3 py-2 min-w-[210px]">
                 <div class="text-[10px] uppercase tracking-[0.3em] text-slate-400">Last Refresh</div>
                 <div id="lastRefresh" class="mt-2 text-sm font-medium text-slate-100">Awaiting data…</div>
-                <div class="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs text-emerald-300">
+                <div class="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300">
                   <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                  Auto Refresh: On
-                </div>
-                <div id="dataSourceStatus" class="mt-2 inline-flex items-center rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs text-slate-300">
-                  Data source: unknown
+                  Auto Refresh On
                 </div>
               </div>
             </div>
           </div>
         </header>
 
-        <section id="skeleton" class="space-y-6">
-          <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <div class="glass rounded-[24px] p-6"><div class="skeleton h-28 rounded-2xl"></div></div>
-            <div class="glass rounded-[24px] p-6"><div class="skeleton h-28 rounded-2xl"></div></div>
-            <div class="glass rounded-[24px] p-6"><div class="skeleton h-28 rounded-2xl"></div></div>
-            <div class="glass rounded-[24px] p-6"><div class="skeleton h-28 rounded-2xl"></div></div>
+        <section id="skeleton" class="space-y-4">
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div class="glass rounded-[24px] p-5"><div class="skeleton h-24 rounded-2xl"></div></div>
+            <div class="glass rounded-[24px] p-5"><div class="skeleton h-24 rounded-2xl"></div></div>
+            <div class="glass rounded-[24px] p-5"><div class="skeleton h-24 rounded-2xl"></div></div>
+            <div class="glass rounded-[24px] p-5"><div class="skeleton h-24 rounded-2xl"></div></div>
           </div>
           <div class="glass rounded-[28px] p-6"><div class="skeleton h-[320px] rounded-2xl"></div></div>
           <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
@@ -173,132 +170,114 @@
           </div>
         </section>
 
-        <div id="dashboard" class="hidden space-y-6 fade-in">
-          <section class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-            <article class="kpi-card glass rounded-[24px] border border-cyan-400/20 p-6 glow-cyan">
-              <div class="flex items-center justify-between">
+        <div id="dashboard" class="hidden space-y-5 fade-in">
+          <section class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <article class="kpi-card glass rounded-[24px] border border-cyan-400/20 p-4 glow-cyan">
+              <div class="flex items-center justify-between gap-3">
                 <div>
-                  <p class="text-sm text-slate-400">Total Ticket</p>
-                  <p id="totalTicket" class="mt-3 text-3xl font-semibold text-white">0</p>
+                  <p class="text-[10px] uppercase tracking-[0.35em] text-slate-400">Total Ticket</p>
+                  <p id="totalTicket" class="mt-2 text-2xl font-semibold text-white">0</p>
                 </div>
-                <div class="rounded-2xl bg-cyan-500/15 p-3 text-cyan-300">📈</div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-sm text-cyan-300">
-                <span class="rounded-full bg-cyan-500/15 px-2 py-1">↗ +12.4%</span>
-                <span class="text-slate-400">vs last month</span>
+                <div class="rounded-2xl bg-cyan-500/15 p-2 text-cyan-300">📈</div>
               </div>
             </article>
 
-            <article class="kpi-card glass rounded-[24px] border border-rose-400/20 p-6 glow-rose">
-              <div class="flex items-center justify-between">
+            <article class="kpi-card glass rounded-[24px] border border-rose-400/20 p-4 glow-rose">
+              <div class="flex items-center justify-between gap-3">
                 <div>
-                  <p class="text-sm text-slate-400">High Priority Ticket</p>
-                  <p id="highTicket" class="mt-3 text-3xl font-semibold text-rose-300">0</p>
+                  <p class="text-[10px] uppercase tracking-[0.35em] text-slate-400">High Priority</p>
+                  <p id="highTicket" class="mt-2 text-2xl font-semibold text-rose-300">0</p>
                 </div>
-                <div class="rounded-2xl bg-rose-500/15 p-3 text-rose-300">⚠️</div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-sm text-rose-300">
-                <span class="rounded-full bg-rose-500/15 px-2 py-1">↗ +4.8%</span>
-                <span class="text-slate-400">urgent review</span>
+                <div class="rounded-2xl bg-rose-500/15 p-2 text-rose-300">⚠️</div>
               </div>
             </article>
 
-            <article class="kpi-card glass rounded-[24px] border border-emerald-400/20 p-6 glow-emerald">
-              <div class="flex items-center justify-between">
+            <article class="kpi-card glass rounded-[24px] border border-emerald-400/20 p-4 glow-emerald">
+              <div class="flex items-center justify-between gap-3">
                 <div>
-                  <p class="text-sm text-slate-400">Total Project</p>
-                  <p id="totalProject" class="mt-3 text-3xl font-semibold text-emerald-300">0</p>
+                  <p class="text-[10px] uppercase tracking-[0.35em] text-slate-400">Total Project</p>
+                  <p id="totalProject" class="mt-2 text-2xl font-semibold text-emerald-300">0</p>
                 </div>
-                <div class="rounded-2xl bg-emerald-500/15 p-3 text-emerald-300">🧩</div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-sm text-emerald-300">
-                <span class="rounded-full bg-emerald-500/15 px-2 py-1">↗ +2.1%</span>
-                <span class="text-slate-400">active delivery</span>
+                <div class="rounded-2xl bg-emerald-500/15 p-2 text-emerald-300">🧩</div>
               </div>
             </article>
 
-            <article class="kpi-card glass rounded-[24px] border border-violet-400/20 p-6 glow-violet">
-              <div class="flex items-center justify-between">
+            <article class="kpi-card glass rounded-[24px] border border-violet-400/20 p-4 glow-violet">
+              <div class="flex items-center justify-between gap-3">
                 <div>
-                  <p class="text-sm text-slate-400">Client Category</p>
-                  <p id="clientCategoryCount" class="mt-3 text-3xl font-semibold text-violet-300">0</p>
+                  <p class="text-[10px] uppercase tracking-[0.35em] text-slate-400">Client Category</p>
+                  <p id="clientCategoryCount" class="mt-2 text-2xl font-semibold text-violet-300">0</p>
                 </div>
-                <div class="rounded-2xl bg-violet-500/15 p-3 text-violet-300">🏢</div>
-              </div>
-              <div class="mt-4 flex items-center gap-2 text-sm text-violet-300">
-                <span class="rounded-full bg-violet-500/15 px-2 py-1">↗ +1.7%</span>
-                <span class="text-slate-400">coverage growth</span>
+                <div class="rounded-2xl bg-violet-500/15 p-2 text-violet-300">🏢</div>
               </div>
             </article>
           </section>
 
-          <section class="glass rounded-[28px] p-6 sm:p-8">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <section class="glass rounded-[28px] p-4">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 class="text-xl font-semibold text-white">Ticket Trend</h2>
-                <p class="mt-1 text-sm text-slate-400">Operational volume over the last six months.</p>
+                <h2 class="text-lg font-semibold text-white">Ticket Trend</h2>
+                <p class="mt-1 text-xs text-slate-400">Operational volume over the last six months.</p>
               </div>
-              <div class="inline-flex items-center rounded-full bg-slate-800/80 px-3 py-1 text-sm text-cyan-300">
-                Live signal • auto-updating
-              </div>
+              <div class="rounded-full bg-slate-800/80 px-3 py-1 text-xs text-cyan-300">Live auto-refresh</div>
             </div>
-            <div class="mt-5 h-[300px] sm:h-[360px]">
+            <div class="mt-4 h-[300px] sm:h-[340px]">
               <canvas id="trendChart"></canvas>
             </div>
           </section>
 
-          <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            <article class="glass rounded-[28px] p-6 sm:p-8">
-              <h2 class="text-xl font-semibold text-white">Priority Distribution</h2>
-              <p class="mt-1 text-sm text-slate-400">Volume by severity level.</p>
-              <div class="mt-5 h-[280px]">
+          <section class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+            <article class="glass rounded-[28px] p-4 sm:p-5">
+              <h2 class="text-sm font-semibold text-white">Priority Distribution</h2>
+              <p class="mt-1 text-[11px] text-slate-400">Severity volume.</p>
+              <div class="mt-4 h-[200px]">
                 <canvas id="priorityChart"></canvas>
               </div>
             </article>
-            <article class="glass rounded-[28px] p-6 sm:p-8">
-              <h2 class="text-xl font-semibold text-white">Client Category Distribution</h2>
-              <p class="mt-1 text-sm text-slate-400">Client mix and segment concentration.</p>
-              <div class="mt-5 h-[280px]">
+            <article class="glass rounded-[28px] p-4 sm:p-5">
+              <h2 class="text-sm font-semibold text-white">Client Category</h2>
+              <p class="mt-1 text-[11px] text-slate-400">Client segment mix.</p>
+              <div class="mt-4 h-[200px]">
                 <canvas id="clientChart"></canvas>
               </div>
             </article>
-            <article class="glass rounded-[28px] p-6 sm:p-8">
-              <h2 class="text-xl font-semibold text-white">Status Distribution</h2>
-              <p class="mt-1 text-sm text-slate-400">Workflow status breakdown across the queue.</p>
-              <div class="mt-5 h-[280px]">
+            <article class="glass rounded-[28px] p-4 sm:p-5">
+              <h2 class="text-sm font-semibold text-white">Status Distribution</h2>
+              <p class="mt-1 text-[11px] text-slate-400">Workflow breakdown.</p>
+              <div class="mt-4 h-[200px]">
                 <canvas id="statusChart"></canvas>
               </div>
             </article>
           </section>
 
-          <section class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-            <article class="glass rounded-[28px] p-6 sm:p-8 xl:col-span-2">
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <section class="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            <article class="glass rounded-[28px] p-4 sm:p-5">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <h2 class="text-xl font-semibold text-white">Top Projects</h2>
-                  <p class="mt-1 text-sm text-slate-400">Highest-activity initiatives and delivery health.</p>
+                  <h2 class="text-sm font-semibold text-white">Top Projects</h2>
+                  <p class="mt-1 text-[11px] text-slate-400">Highest activity.</p>
                 </div>
-                <div class="rounded-full bg-slate-800/80 px-3 py-1 text-sm text-cyan-300">Ranking • Trend</div>
+                <div class="rounded-full bg-slate-800/80 px-3 py-1 text-[11px] text-cyan-300">Ranking</div>
               </div>
-              <div class="mt-5 h-[220px]">
+              <div class="mt-4 h-[180px]">
                 <canvas id="topProjectsChart"></canvas>
               </div>
-              <div id="topProjectsList" class="mt-5 space-y-4"></div>
+              <div id="topProjectsList" class="mt-4 space-y-3"></div>
             </article>
-            <article class="glass rounded-[28px] p-6 sm:p-8">
-              <h2 class="text-xl font-semibold text-white">Issue Summary</h2>
-              <p class="mt-1 text-sm text-slate-400">Conversation-driven issue patterns.</p>
-              <div class="mt-5 h-[180px]">
+            <article class="glass rounded-[28px] p-4 sm:p-5">
+              <h2 class="text-sm font-semibold text-white">Issue Summary</h2>
+              <p class="mt-1 text-[11px] text-slate-400">Top issue patterns.</p>
+              <div class="mt-4 h-[180px]">
                 <canvas id="issueTypeChart"></canvas>
               </div>
-              <div id="issueSummary" class="mt-5 grid gap-3"></div>
+              <div id="issueSummary" class="mt-4 grid gap-3"></div>
             </article>
           </section>
 
-          <section class="glass rounded-[28px] p-6 sm:p-8">
-            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <section class="glass rounded-[28px] p-5 sm:p-6">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h2 class="text-xl font-semibold text-white">Recent Tickets</h2>
+                <h2 class="text-lg font-semibold text-white">Recent Tickets</h2>
                 <p class="mt-1 text-sm text-slate-400">Search, sort, and paginate the live incident queue.</p>
               </div>
               <div class="flex flex-col gap-3 sm:flex-row">
@@ -326,7 +305,7 @@
                     <tr>
                       <th class="px-4 py-3 text-left">Date</th>
                       <th class="px-4 py-3 text-left">Project</th>
-                      <th class="px-4 py-3 text-left">Issue Type</th>
+                      <th class="px-4 py-3 text-left">Issue</th>
                       <th class="px-4 py-3 text-left">Priority</th>
                       <th class="px-4 py-3 text-left">Client Category</th>
                       <th class="px-4 py-3 text-left">Status</th>
@@ -442,11 +421,15 @@
       }
 
       function getIssueType(row) {
-        return String(getValue(row, ["Issue Type", "Issue", "Type", "Issue Summary", "Issue Key", "IssueKey", "issue key", "issue_key"]) || "Incident");
+        return String(getValue(row, ["Issue Type", "Issue", "Type", "Issue Summary"]) || "Incident");
+      }
+
+      function getProduct(row) {
+        return String(getValue(row, ["Product", "Service", "Product Name"]) || "Unknown");
       }
 
       function getPriority(row) {
-        return String(getValue(row, ["Priority", "priority"]) || "Medium");
+        return String(getValue(row, ["Priority", "priority"] ) || "Medium");
       }
 
       function getClientCategory(row) {
@@ -458,18 +441,24 @@
       }
 
       function getIssueKey(row) {
-        return String(getValue(row, ["Issue Key", "IssueKey", "issue key", "issue_key", "Ticket ID", "ID", "Ticket"]) || "#000");
+        return String(getValue(row, ["Issue Key", "IssueKey", "issue key", "issue_key"]) || "Unknown");
+      }
+
+      function getStartTime(row) {
+        return String(getValue(row, ["Start Time", "Time", "Created Time"]) || "");
       }
 
       function toDisplayData(rawRows) {
         return rawRows.map((row) => ({
           date: getDate(row),
           project: getProject(row),
-          issueType: getIssueType(row),
+          issueType: getIssueKey(row) || getIssueType(row),
           priority: getPriority(row),
           clientCategory: getClientCategory(row),
           status: getStatus(row),
           issueKey: getIssueKey(row),
+          product: getProduct(row),
+          startTime: getStartTime(row),
           raw: row
         }));
       }
@@ -820,7 +809,7 @@
         document.getElementById("dashboard").classList.add("hidden");
 
         let response = null;
-        let sourceLabel = "Data source: fallback sample";
+        let sourceLabel = "Fallback sample";
 
         try {
           response = await fetch(API_URL, { cache: "no-store" });
@@ -828,7 +817,7 @@
             const payload = await response.json();
             const rows = normalizeRows(payload);
             state.data = toDisplayData(rows);
-            sourceLabel = "Data source: live GSheet";
+            sourceLabel = "Live GSheet";
           } else {
             state.data = toDisplayData(defaultData);
           }
@@ -837,7 +826,6 @@
         }
 
         state.filtered = [...state.data];
-        document.getElementById("dataSourceStatus").textContent = sourceLabel;
         setLastRefresh();
         renderKpis();
         destroyCharts();
