@@ -151,6 +151,9 @@
                   <span class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                   Auto Refresh: On
                 </div>
+                <div id="dataSourceStatus" class="mt-2 inline-flex items-center rounded-full border border-slate-700 bg-slate-900/70 px-3 py-1 text-xs text-slate-300">
+                  Data source: unknown
+                </div>
               </div>
             </div>
           </div>
@@ -409,8 +412,20 @@
         return defaultData;
       }
 
+      function parseDateValue(value) {
+        if (typeof value !== "string") return value;
+        const trimmed = value.trim();
+        const dmyMatch = trimmed.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+        if (dmyMatch) {
+          const [, day, month, year] = dmyMatch;
+          return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+        }
+        return trimmed;
+      }
+
       function getDate(row) {
-        return getValue(row, ["Start Date", "Date", "Created At", "Timestamp", "Date Created"]);
+        const raw = getValue(row, ["Start Date", "Date", "Created At", "Timestamp", "Date Created"]);
+        return parseDateValue(raw);
       }
 
       function getProject(row) {
@@ -474,11 +489,31 @@
       }
 
       function renderTrendChart() {
-        const monthKeys = Array.from({ length: 6 }, (_, index) => {
-          const date = new Date();
-          date.setMonth(date.getMonth() - (5 - index));
-          return `${date.toLocaleString("en-US", { month: "short" })} ${date.getFullYear()}`;
-        });
+        const parsedDates = state.data
+          .map((row) => new Date(row.date))
+          .filter((date) => !Number.isNaN(date.getTime()));
+
+        let monthKeys = [];
+        if (parsedDates.length) {
+          const minDate = parsedDates.reduce((a, b) => (a < b ? a : b));
+          const maxDate = parsedDates.reduce((a, b) => (a > b ? a : b));
+          const cursor = new Date(minDate.getFullYear(), minDate.getMonth(), 1);
+          const end = new Date(maxDate.getFullYear(), maxDate.getMonth(), 1);
+
+          while (cursor <= end) {
+            monthKeys.push(`${cursor.toLocaleString("en-US", { month: "short" })} ${cursor.getFullYear()}`);
+            cursor.setMonth(cursor.getMonth() + 1);
+          }
+        }
+
+        if (!monthKeys.length) {
+          monthKeys = Array.from({ length: 6 }, (_, index) => {
+            const date = new Date();
+            date.setMonth(date.getMonth() - (5 - index));
+            return `${date.toLocaleString("en-US", { month: "short" })} ${date.getFullYear()}`;
+          });
+        }
+
         const counts = Object.fromEntries(monthKeys.map((key) => [key, 0]));
 
         state.data.forEach((row) => {
@@ -735,16 +770,25 @@
         document.getElementById("skeleton").classList.remove("hidden");
         document.getElementById("dashboard").classList.add("hidden");
 
+        let response = null;
+        let sourceLabel = "Data source: fallback sample";
+
         try {
-          const response = await fetch(API_URL, { cache: "no-store" });
-          const payload = await response.json();
-          const rows = normalizeRows(payload);
-          state.data = toDisplayData(rows);
+          response = await fetch(API_URL, { cache: "no-store" });
+          if (response.ok) {
+            const payload = await response.json();
+            const rows = normalizeRows(payload);
+            state.data = toDisplayData(rows);
+            sourceLabel = "Data source: live GSheet";
+          } else {
+            state.data = toDisplayData(defaultData);
+          }
         } catch (error) {
           state.data = toDisplayData(defaultData);
         }
 
         state.filtered = [...state.data];
+        document.getElementById("dataSourceStatus").textContent = sourceLabel;
         setLastRefresh();
         renderKpis();
         destroyCharts();
