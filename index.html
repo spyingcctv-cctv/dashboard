@@ -298,6 +298,12 @@
               </div>
             </div>
 
+            <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button id="downloadExcelButton" class="inline-flex items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400/40 hover:bg-slate-800/90">
+                Download Excel
+              </button>
+            </div>
+
             <div class="mt-6 overflow-hidden rounded-2xl border border-slate-800">
               <div class="table-scroll">
                 <table class="min-w-full text-sm">
@@ -500,6 +506,7 @@
       }
 
       function renderTrendChart() {
+        if (typeof Chart === "undefined") return;
         const parsedDates = state.data
           .map((row) => new Date(row.date))
           .filter((date) => !Number.isNaN(date.getTime()));
@@ -578,6 +585,7 @@
       }
 
       function renderPriorityChart() {
+        if (typeof Chart === "undefined") return;
         const counts = countBy(state.data, (row) => row.priority);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
@@ -601,6 +609,7 @@
       }
 
       function renderClientChart() {
+        if (typeof Chart === "undefined") return;
         const counts = countBy(state.data, (row) => row.clientCategory);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
@@ -624,6 +633,7 @@
       }
 
       function renderStatusChart() {
+        if (typeof Chart === "undefined") return;
         const counts = countBy(state.data, (row) => row.status);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
@@ -647,6 +657,7 @@
       }
 
       function renderTopProjects() {
+        if (typeof Chart === "undefined") return;
         const counts = countBy(state.data, (row) => row.project);
         const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const labels = entries.map(([name]) => name);
@@ -700,6 +711,7 @@
       }
 
       function renderIssueSummary() {
+        if (typeof Chart === "undefined") return;
         const counts = countBy(state.data, (row) => (row.issueKey || row.issueType || "Other").toString());
         const entries = Object.entries(counts)
           .sort((a, b) => b[1] - a[1])
@@ -764,6 +776,40 @@
         state.filtered = rows;
         state.page = Math.min(state.page, Math.max(1, Math.ceil(rows.length / state.pageSize) || 1));
         renderTable();
+      }
+
+      function getCsvContent(rows) {
+        const headers = ["Date", "Project", "Issue", "Priority", "Client Category", "Status", "Start Time"];
+        const escapeValue = (value) => {
+          const stringValue = String(value || "").replace(/"/g, '""');
+          return `"${stringValue}"`;
+        };
+        const lines = [headers.join(",")];
+        rows.forEach((row) => {
+          lines.push([
+            row.date,
+            row.project,
+            row.issueType,
+            row.priority,
+            row.clientCategory,
+            row.status,
+            row.startTime
+          ].map(escapeValue).join(","));
+        });
+        return lines.join("\n");
+      }
+
+      function downloadExcel() {
+        const csv = getCsvContent(state.filtered);
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `ticket-export-${new Date().toISOString().slice(0, 10)}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       }
 
       function renderTable() {
@@ -857,6 +903,10 @@
         if (!button) return;
         state.page = Number(button.dataset.page);
         renderTable();
+      });
+
+      document.getElementById("downloadExcelButton")?.addEventListener("click", () => {
+        downloadExcel();
       });
 
       updateClock();
