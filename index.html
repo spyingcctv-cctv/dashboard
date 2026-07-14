@@ -115,6 +115,103 @@
         overflow-x: auto;
       }
 
+      body.light {
+        color-scheme: light;
+        background: radial-gradient(circle at top left, rgba(96, 165, 250, 0.14), transparent 28%), linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        color: #0f172a;
+      }
+
+      body.light .glass {
+        background: rgba(255, 255, 255, 0.96);
+        border-color: rgba(148, 163, 184, 0.30);
+        box-shadow: 0 20px 50px rgba(148, 163, 184, 0.14);
+      }
+
+      body.light h1,
+      body.light h2,
+      body.light h3,
+      body.light p,
+      body.light span,
+      body.light label,
+      body.light .text-white,
+      body.light .text-slate-100,
+      body.light .text-cyan-300,
+      body.light .text-rose-300,
+      body.light .text-emerald-300,
+      body.light .text-violet-300 {
+        color: #0f172a !important;
+      }
+
+      body.light .text-slate-200,
+      body.light .text-slate-300,
+      body.light .text-slate-400,
+      body.light .text-slate-500,
+      body.light .text-slate-600 {
+        color: #334155 !important;
+      }
+
+      body.light .bg-slate-900\/95,
+      body.light .bg-slate-900\/80,
+      body.light .bg-slate-900\/70,
+      body.light .bg-slate-800\/90,
+      body.light .bg-slate-800\/80,
+      body.light .bg-slate-800\/70,
+      body.light .bg-slate-950\/60 {
+        background-color: rgba(248, 250, 252, 0.95) !important;
+      }
+
+      body.light .bg-slate-800\/15,
+      body.light .bg-slate-700\/15 {
+        background-color: rgba(148, 163, 184, 0.12) !important;
+      }
+
+      body.light .hover\:bg-slate-800\/90:hover,
+      body.light .hover\:bg-slate-900\/70:hover,
+      body.light .hover\:bg-slate-800\/80:hover {
+        background-color: rgba(241, 245, 249, 0.96) !important;
+      }
+
+      body.light .border-slate-800,
+      body.light .border-slate-700 {
+        border-color: rgba(148, 163, 184, 0.26) !important;
+      }
+
+      body.light table thead th {
+        background: rgba(241, 245, 249, 0.98);
+        color: #0f172a;
+      }
+
+      body.light table tbody tr:nth-child(even) {
+        background: rgba(15, 23, 42, 0.03);
+      }
+
+      body.light input,
+      body.light select,
+      body.light button {
+        color: #0f172a;
+      }
+
+      body.light input,
+      body.light select {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-color: rgba(148, 163, 184, 0.26);
+      }
+
+      body.light button {
+        background-color: rgba(255, 255, 255, 0.96);
+      }
+
+      body.light .text-cyan-300,
+      body.light .text-rose-300,
+      body.light .text-emerald-300,
+      body.light .text-violet-300,
+      body.light .text-slate-300,
+      body.light .text-slate-400,
+      body.light .text-slate-500,
+      body.light .text-slate-600 {
+        color: #334155 !important;
+      }
+
       table thead th {
         position: sticky;
         top: 0;
@@ -123,7 +220,7 @@
       }
     </style>
   </head>
-  <body class="text-slate-100 antialiased">
+  <body class="text-slate-100 antialiased dark">
     <div class="min-h-screen p-4 sm:p-6 lg:p-8">
       <div class="mx-auto max-w-7xl space-y-6">
         <header class="glass rounded-[30px] p-6 sm:p-8 lg:p-9">
@@ -139,12 +236,19 @@
                 real-time command surface for ticket operations, priority triage, and client health.
               </p>
             </div>
-            <div class="flex flex-col gap-2 md:flex-row md:items-center">
-              <div class="glass rounded-2xl px-3 py-2 min-w-[170px]">
-                <div class="text-[10px] uppercase tracking-[0.3em] text-slate-400">Live Clock</div>
-                <div id="clock" class="mt-2 font-mono text-sm text-white"></div>
+            <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+              <div class="flex flex-col gap-2">
+                <div class="glass rounded-2xl px-3 py-2 min-w-[170px]">
+                  <div class="text-[10px] uppercase tracking-[0.3em] text-slate-400">Live Clock</div>
+                  <div id="clock" class="mt-2 font-mono text-sm text-white"></div>
+                </div>
+                <div class="flex justify-end">
+                  <button id="themeToggleBtn" type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-100 transition hover:border-cyan-400/40 hover:bg-slate-800/90">
+                    <span id="themeToggleIcon" class="text-base">🌙</span>
+                  </button>
+                </div>
               </div>
-              <div class="glass rounded-2xl px-3 py-2 min-w-[210px]">
+              <div class="glass rounded-2xl px-3 py-3 min-w-[210px]">
                 <div class="text-[10px] uppercase tracking-[0.3em] text-slate-400">Last Refresh</div>
                 <div id="lastRefresh" class="mt-2 text-sm font-medium text-slate-100">Awaiting data…</div>
                 <div class="mt-2 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300">
@@ -357,6 +461,7 @@
       };
 
       const charts = {};
+      const THEME_KEY = "dashboardTheme";
 
       const defaultData = [
         { "Start Date": "2026-07-01", Projects: "Atlas Core", "Issue Type": "Voice", Priority: "High", "Client Category": "Enterprise", Status: "Solved", "Issue Key": "INC-1042" },
@@ -375,6 +480,37 @@
         { "Start Date": "2026-03-03", Projects: "Orbit Ops", "Issue Type": "Recording", Priority: "Medium", "Client Category": "Enterprise", Status: "On Progress", "Issue Key": "INC-0789" },
         { "Start Date": "2026-02-21", Projects: "Pulse AI", "Issue Type": "Call", Priority: "Low", "Client Category": "SMB", Status: "Pending", "Issue Key": "INC-0751" }
       ];
+
+      function getStoredTheme() {
+        return localStorage.getItem(THEME_KEY) || "dark";
+      }
+
+      function refreshCharts() {
+        if (!state.data.length) return;
+        destroyCharts();
+        renderTrendChart();
+        renderPriorityChart();
+        renderClientChart();
+        renderStatusChart();
+        renderTopProjects();
+        renderIssueSummary();
+      }
+
+      function setTheme(theme) {
+        document.body.classList.toggle("light", theme === "light");
+        document.body.classList.toggle("dark", theme !== "light");
+        localStorage.setItem(THEME_KEY, theme);
+        const themeIcon = document.getElementById("themeToggleIcon");
+        if (themeIcon) {
+          themeIcon.textContent = theme === "light" ? "🌙" : "☀️";
+        }
+        refreshCharts();
+        applyFilters();
+      }
+
+      function getChartTextColor() {
+        return document.body.classList.contains("light") ? "#475569" : "#cbd5e1";
+      }
 
       function updateClock() {
         document.getElementById("clock").textContent = new Date().toLocaleString("en-GB", {
@@ -559,6 +695,7 @@
 
         const labels = monthKeys;
         const values = monthKeys.map((key) => counts[key]);
+        const chartTextColor = getChartTextColor();
 
         charts.trend = new Chart(document.getElementById("trendChart"), {
           type: "line",
@@ -586,11 +723,11 @@
               y: {
                 beginAtZero: true,
                 grid: { color: "rgba(148, 163, 184, 0.12)" },
-                ticks: { color: "#cbd5e1" }
+                ticks: { color: chartTextColor }
               },
               x: {
                 grid: { display: false },
-                ticks: { color: "#cbd5e1" }
+                ticks: { color: chartTextColor }
               }
             }
           }
@@ -602,6 +739,7 @@
         const counts = countBy(state.data, (row) => row.priority);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
+        const chartTextColor = getChartTextColor();
         charts.priority = new Chart(document.getElementById("priorityChart"), {
           type: "doughnut",
           data: {
@@ -616,7 +754,7 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#cbd5e1" } } }
+            plugins: { legend: { labels: { color: chartTextColor } } }
           }
         });
       }
@@ -626,6 +764,7 @@
         const counts = countBy(state.data, (row) => row.clientCategory);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
+        const chartTextColor = getChartTextColor();
         charts.client = new Chart(document.getElementById("clientChart"), {
           type: "doughnut",
           data: {
@@ -640,7 +779,7 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#cbd5e1" } } }
+            plugins: { legend: { labels: { color: chartTextColor } } }
           }
         });
       }
@@ -650,6 +789,7 @@
         const counts = countBy(state.data, (row) => row.status);
         const labels = Object.keys(counts);
         const values = Object.values(counts);
+        const chartTextColor = getChartTextColor();
         charts.status = new Chart(document.getElementById("statusChart"), {
           type: "doughnut",
           data: {
@@ -664,7 +804,7 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#cbd5e1" } } }
+            plugins: { legend: { labels: { color: chartTextColor } } }
           }
         });
       }
@@ -675,6 +815,7 @@
         const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
         const labels = entries.map(([name]) => name);
         const values = entries.map(([, count]) => count);
+        const chartTextColor = getChartTextColor();
 
         charts.topProjects = new Chart(document.getElementById("topProjectsChart"), {
           type: "bar",
@@ -697,10 +838,10 @@
               x: {
                 beginAtZero: true,
                 grid: { color: "rgba(148, 163, 184, 0.12)" },
-                ticks: { color: "#cbd5e1" }
+                ticks: { color: chartTextColor }
               },
               y: {
-                ticks: { color: "#cbd5e1" }
+                ticks: { color: chartTextColor }
               }
             }
           }
@@ -745,6 +886,7 @@
           </div>
         `).join("");
 
+        const chartTextColor = getChartTextColor();
         charts.issueType = new Chart(document.getElementById("issueTypeChart"), {
           type: "pie",
           data: {
@@ -758,7 +900,7 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: "#cbd5e1" } } }
+            plugins: { legend: { labels: { color: chartTextColor } } }
           }
         });
       }
@@ -972,6 +1114,15 @@
         downloadExcel();
       });
 
+      const themeToggleBtn = document.getElementById("themeToggleBtn");
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", () => {
+          const nextTheme = getStoredTheme() === "light" ? "dark" : "light";
+          setTheme(nextTheme);
+        });
+      }
+
+      setTheme(getStoredTheme());
       updateClock();
       setInterval(updateClock, 1000);
       loadData();
