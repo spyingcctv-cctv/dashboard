@@ -296,6 +296,14 @@
                       <option value="status">Status</option>
                     </select>
                   </label>
+                  <label class="flex flex-col text-sm text-slate-400">
+                    <span class="mb-1 text-xs uppercase tracking-[0.25em]">Rows</span>
+                    <select id="rowsPerPage" class="h-11 rounded-xl border border-slate-700 bg-slate-900/80 px-3 text-sm text-slate-100 outline-none">
+                      <option value="10">10</option>
+                      <option value="20">20</option>
+                      <option value="30">30</option>
+                    </select>
+                  </label>
                   <button id="downloadExcelButton" aria-label="Download Excel" class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-900/80 text-cyan-300 transition hover:border-cyan-400/40 hover:bg-slate-800/90">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor">
                       <path d="M12 3v10m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
@@ -325,7 +333,7 @@
             </div>
             <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div id="tableMeta" class="text-sm text-slate-400"></div>
-              <div id="pagination" class="flex flex-wrap gap-2"></div>
+              <div id="pagination" class="flex gap-2 overflow-x-auto pb-1"></div>
             </div>
           </section>
         </div>
@@ -335,14 +343,17 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
       const API_URL = "https://script.google.com/macros/s/AKfycbwawSsvxVbTtK5vKj_EePhnKRhSoSCnnXcScntpPIMG24kx6IS8Gpe4H3aU6SAGQeZO/exec";
-      const DEFAULT_PAGE_SIZE = 7;
+      const DEFAULT_PAGE_SIZE = 10;
+      const PAGE_SIZE_STORAGE_KEY = "ticketRowsPerPage";
+      const SORT_STORAGE_KEY = "ticketSortPreference";
+      const SEARCH_STORAGE_KEY = "ticketSearchTerm";
       const state = {
         data: [],
         filtered: [],
         page: 1,
-        pageSize: DEFAULT_PAGE_SIZE,
-        search: "",
-        sort: "date-desc"
+        pageSize: Number(localStorage.getItem(PAGE_SIZE_STORAGE_KEY)) || DEFAULT_PAGE_SIZE,
+        search: localStorage.getItem(SEARCH_STORAGE_KEY) || "",
+        sort: localStorage.getItem(SORT_STORAGE_KEY) || "date-desc"
       };
 
       const charts = {};
@@ -843,13 +854,42 @@
 
         const totalPages = Math.max(1, Math.ceil(state.filtered.length / state.pageSize));
         document.getElementById("tableMeta").textContent = `Showing ${start + 1}-${Math.min(start + pageRows.length, state.filtered.length)} of ${state.filtered.length} tickets`;
-        document.getElementById("pagination").innerHTML = [
-          { label: "← Prev", value: Math.max(1, state.page - 1) },
-          ...Array.from({ length: totalPages }, (_, index) => ({ label: String(index + 1), value: index + 1 })),
-          { label: "Next →", value: Math.min(totalPages, state.page + 1) }
-        ].map((item) => `
-          <button data-page="${item.value}" class="rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm ${item.value === state.page ? "bg-cyan-500/20 text-cyan-300" : "text-slate-300"}">${item.label}</button>
-        `).join("");
+
+        const pages = [];
+        const addPage = (value, label = null) => pages.push({ value, label: label ?? String(value) });
+        const addEllipsis = () => pages.push({ value: null, label: "...", ellipsis: true });
+
+        addPage(Math.max(1, state.page - 1), "← Prev");
+
+        if (totalPages <= 7) {
+          for (let i = 1; i <= totalPages; i += 1) {
+            addPage(i);
+          }
+        } else {
+          addPage(1);
+          const left = Math.max(2, state.page - 1);
+          const right = Math.min(totalPages - 1, state.page + 1);
+
+          if (left > 2) addEllipsis();
+          for (let page = left; page <= right; page += 1) {
+            addPage(page);
+          }
+          if (right < totalPages - 1) addEllipsis();
+          addPage(totalPages);
+        }
+
+        addPage(Math.min(totalPages, state.page + 1), "Next →");
+
+        document.getElementById("pagination").innerHTML = pages.map((item) => {
+          if (item.ellipsis) {
+            return `<span class="inline-flex h-11 items-center px-3 text-sm text-slate-500">${item.label}</span>`;
+          }
+          const active = item.value === state.page;
+          const disabled = item.label === "← Prev" && state.page === 1 || item.label === "Next →" && state.page === totalPages;
+          return `
+            <button data-page="${item.value}" ${disabled ? "disabled" : ""} class="rounded-xl border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm ${active ? "bg-cyan-500/20 text-cyan-300" : "text-slate-300"} ${disabled ? "cursor-not-allowed opacity-50" : "hover:border-cyan-400/40 hover:bg-slate-800/90"}">${item.label}</button>
+          `;
+        }).join("");
       }
 
       async function loadData() {
@@ -888,17 +928,38 @@
         document.getElementById("dashboard").classList.remove("hidden");
       }
 
-      document.getElementById("tableSearch").addEventListener("input", (event) => {
-        state.search = event.target.value;
-        state.page = 1;
-        applyFilters();
-      });
+      const tableSearchInput = document.getElementById("tableSearch");
+      if (tableSearchInput) {
+        tableSearchInput.value = state.search;
+        tableSearchInput.addEventListener("input", (event) => {
+          state.search = event.target.value;
+          localStorage.setItem(SEARCH_STORAGE_KEY, state.search);
+          state.page = 1;
+          applyFilters();
+        });
+      }
 
-      document.getElementById("tableSort").addEventListener("change", (event) => {
-        state.sort = event.target.value;
-        state.page = 1;
-        applyFilters();
-      });
+      const tableSortSelect = document.getElementById("tableSort");
+      if (tableSortSelect) {
+        tableSortSelect.value = state.sort;
+        tableSortSelect.addEventListener("change", (event) => {
+          state.sort = event.target.value;
+          localStorage.setItem(SORT_STORAGE_KEY, state.sort);
+          state.page = 1;
+          applyFilters();
+        });
+      }
+
+      const rowsPerPageSelect = document.getElementById("rowsPerPage");
+      if (rowsPerPageSelect) {
+        rowsPerPageSelect.value = String(state.pageSize);
+        rowsPerPageSelect.addEventListener("change", (event) => {
+          state.pageSize = Number(event.target.value) || DEFAULT_PAGE_SIZE;
+          localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(state.pageSize));
+          state.page = 1;
+          applyFilters();
+        });
+      }
 
       document.getElementById("pagination").addEventListener("click", (event) => {
         const button = event.target.closest("button[data-page]");
