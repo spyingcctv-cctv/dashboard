@@ -765,13 +765,7 @@
               legend: {
                 labels: {
                   color: chartTextColor,
-                  usePointStyle: true,
-                  generateLabels: function(chart) {
-                    const data = chart.data;
-                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
-                    const ordered = items.slice().sort((a, b) => b.value - a.value);
-                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
-                  }
+                  usePointStyle: true
                 }
               },
               tooltip: {
@@ -822,14 +816,7 @@
               legend: {
                 labels: {
                   color: chartTextColor,
-                  usePointStyle: true,
-                  generateLabels: function(chart) {
-                    const data = chart.data;
-                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
-                    // client legend: keep descending by value (matches chart)
-                    const ordered = items.slice().sort((a,b) => b.value - a.value);
-                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
-                  }
+                  usePointStyle: true
                 }
               },
               tooltip: {
@@ -880,13 +867,7 @@
               legend: {
                 labels: {
                   color: chartTextColor,
-                  usePointStyle: true,
-                  generateLabels: function(chart) {
-                    const data = chart.data;
-                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
-                    const ordered = items.slice().sort((a, b) => b.value - a.value);
-                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
-                  }
+                  usePointStyle: true
                 }
               },
               tooltip: {
@@ -1001,14 +982,7 @@
               legend: {
                 labels: {
                   color: chartTextColor,
-                  usePointStyle: true,
-                  generateLabels: function(chart) {
-                    const data = chart.data;
-                    return data.labels.map((label, i) => {
-                      const value = data.datasets[0].data[i] || 0;
-                      return { text: label, fillStyle: data.datasets[0].backgroundColor[i], hidden: false, index: i };
-                    });
-                  }
+                  usePointStyle: true
                 }
               },
               tooltip: {
