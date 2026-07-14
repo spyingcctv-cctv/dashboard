@@ -740,21 +740,53 @@
         const labels = Object.keys(counts);
         const values = Object.values(counts);
         const chartTextColor = getChartTextColor();
+        // sort priority slices by descending count to match client category behavior
+        const priorityColors = ["#fb7185", "#f59e0b", "#34d399", "#818cf8"];
+        const priorityItems = labels.map((l, i) => ({ label: l, value: values[i] || 0, color: priorityColors[i] || '#ddd' }))
+          .sort((a, b) => b.value - a.value);
+        const sortedPriorityLabels = priorityItems.map(i => i.label);
+        const sortedPriorityValues = priorityItems.map(i => i.value);
+        const sortedPriorityColors = priorityItems.map(i => i.color);
+
         charts.priority = new Chart(document.getElementById("priorityChart"), {
           type: "doughnut",
           data: {
-            labels,
+            labels: sortedPriorityLabels,
             datasets: [{
-              data: values,
-              backgroundColor: ["#fb7185", "#f59e0b", "#34d399", "#818cf8"],
-              borderColor: "rgba(2, 6, 23, 0.95)",
-              borderWidth: 2
+              data: sortedPriorityValues,
+              backgroundColor: sortedPriorityColors,
+              borderWidth: 0
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: chartTextColor } } }
+            plugins: {
+              legend: {
+                labels: {
+                  color: chartTextColor,
+                  usePointStyle: true,
+                  generateLabels: function(chart) {
+                    const data = chart.data;
+                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
+                    const ordered = items.slice().sort((a, b) => b.value - a.value);
+                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const v = context.parsed || 0;
+                    const data = context.chart.data.datasets[0].data || [];
+                    const sum = data.reduce((a,b) => a + (b || 0), 0);
+                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                    return `${context.label}: ${v} (${pct}%)`;
+                  }
+                }
+              }
+            },
+            elements: { arc: { borderWidth: 0 } }
           }
         });
       }
@@ -765,21 +797,54 @@
         const labels = Object.keys(counts);
         const values = Object.values(counts);
         const chartTextColor = getChartTextColor();
+        // sort client categories by descending ticket count (already desired behavior)
+        const clientColors = ["#22d3ee", "#8b5cf6", "#34d399", "#f59e0b"];
+        const clientItems = labels.map((l, i) => ({ label: l, value: values[i] || 0, color: clientColors[i] || '#ddd' }))
+          .sort((a, b) => b.value - a.value);
+        const sortedClientLabels = clientItems.map(i => i.label);
+        const sortedClientValues = clientItems.map(i => i.value);
+        const sortedClientColors = clientItems.map(i => i.color);
+
         charts.client = new Chart(document.getElementById("clientChart"), {
           type: "doughnut",
           data: {
-            labels,
+            labels: sortedClientLabels,
             datasets: [{
-              data: values,
-              backgroundColor: ["#22d3ee", "#8b5cf6", "#34d399", "#f59e0b"],
-              borderColor: "rgba(2, 6, 23, 0.95)",
-              borderWidth: 2
+              data: sortedClientValues,
+              backgroundColor: sortedClientColors,
+              borderWidth: 0
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: chartTextColor } } }
+            plugins: {
+              legend: {
+                labels: {
+                  color: chartTextColor,
+                  usePointStyle: true,
+                  generateLabels: function(chart) {
+                    const data = chart.data;
+                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
+                    // client legend: keep descending by value (matches chart)
+                    const ordered = items.slice().sort((a,b) => b.value - a.value);
+                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const v = context.parsed || 0;
+                    const data = context.chart.data.datasets[0].data || [];
+                    const sum = data.reduce((a,b) => a + (b || 0), 0);
+                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                    return `${context.label}: ${v} (${pct}%)`;
+                  }
+                }
+              }
+            },
+            elements: { arc: { borderWidth: 0 } }
           }
         });
       }
@@ -790,21 +855,53 @@
         const labels = Object.keys(counts);
         const values = Object.values(counts);
         const chartTextColor = getChartTextColor();
+        // sort status slices by descending count (solved, on progress, pending, etc.)
+        const statusColors = ["#34d399", "#fbbf24", "#818cf8", "#94a3b8"];
+        const statusItems = labels.map((l, i) => ({ label: l, value: values[i] || 0, color: statusColors[i] || '#ddd' }))
+          .sort((a, b) => b.value - a.value);
+        const sortedStatusLabels = statusItems.map(i => i.label);
+        const sortedStatusValues = statusItems.map(i => i.value);
+        const sortedStatusColors = statusItems.map(i => i.color);
+
         charts.status = new Chart(document.getElementById("statusChart"), {
           type: "doughnut",
           data: {
-            labels,
+            labels: sortedStatusLabels,
             datasets: [{
-              data: values,
-              backgroundColor: ["#34d399", "#fbbf24", "#818cf8", "#94a3b8"],
-              borderColor: "rgba(2, 6, 23, 0.95)",
-              borderWidth: 2
+              data: sortedStatusValues,
+              backgroundColor: sortedStatusColors,
+              borderWidth: 0
             }]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: chartTextColor } } }
+            plugins: {
+              legend: {
+                labels: {
+                  color: chartTextColor,
+                  usePointStyle: true,
+                  generateLabels: function(chart) {
+                    const data = chart.data;
+                    const items = data.labels.map((label, i) => ({ label, value: data.datasets[0].data[i] || 0, color: data.datasets[0].backgroundColor[i] }));
+                    const ordered = items.slice().sort((a, b) => b.value - a.value);
+                    return ordered.map(item => ({ text: item.label, fillStyle: item.color, hidden: false, index: data.labels.indexOf(item.label) }));
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const v = context.parsed || 0;
+                    const data = context.chart.data.datasets[0].data || [];
+                    const sum = data.reduce((a,b) => a + (b || 0), 0);
+                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                    return `${context.label}: ${v} (${pct}%)`;
+                  }
+                }
+              }
+            },
+            elements: { arc: { borderWidth: 0 } }
           }
         });
       }
@@ -900,7 +997,32 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { labels: { color: chartTextColor } } }
+            plugins: {
+              legend: {
+                labels: {
+                  color: chartTextColor,
+                  usePointStyle: true,
+                  generateLabels: function(chart) {
+                    const data = chart.data;
+                    return data.labels.map((label, i) => {
+                      const value = data.datasets[0].data[i] || 0;
+                      return { text: label, fillStyle: data.datasets[0].backgroundColor[i], hidden: false, index: i };
+                    });
+                  }
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const v = context.parsed || 0;
+                    const data = context.chart.data.datasets[0].data || [];
+                    const sum = data.reduce((a,b) => a + (b || 0), 0);
+                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                    return `${context.label}: ${v} (${pct}%)`;
+                  }
+                }
+              }
+            }
           }
         });
       }
